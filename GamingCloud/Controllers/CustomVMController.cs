@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using GamingCloud.Data;
 using GamingCloud.Models;
@@ -23,12 +18,7 @@ namespace GamingCloud.Controllers
         // GET: CustomVM
         public async Task<IActionResult> Index()
         {
-
-            VMTools vmTools = new VMTools(GetUserName());
-
-            await vmTools.GetPublicIpAdress();
-            
-              return _context.DbSet != null ? 
+            return _context.DbSet != null ? 
                           View(await _context.DbSet.ToListAsync()) :
                           Problem("Entity set 'ApplicationDbContext.DbSet'  is null.");
         }
@@ -69,17 +59,17 @@ namespace GamingCloud.Controllers
             {
                 _context.Add(customVM);
 
-                var userName = GetUserName();
+                string userName = GetUserName();
                 
                 VMTools vmTools = new VMTools(userName);
 
-                await vmTools.SetInitResouceGroup();
+                await vmTools.SetResourceGroupAsync();
                     
-                var a = vmTools.CreateVirtualMachine(customVM.login, customVM.password);
+                vmTools.CreateVirtualMachine(customVM.login, customVM.password);
 
                 customVM.name = userName + "-vm";
                 customVM.active = true;
-                customVM.IP = "Test";
+                customVM.IP = await vmTools.GetPublicIpAddressAsync();
                 
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -91,7 +81,7 @@ namespace GamingCloud.Controllers
         {
             var user = HttpContext.User.Identity.Name.Equals("") ? "anonymous@gmail.com" : HttpContext.User.Identity.Name;
 
-            return user.Split("@")[0];
+            return user.Split("@")[0].Replace(".","");
         }
         
         // GET: Change status
@@ -111,12 +101,13 @@ namespace GamingCloud.Controllers
             customVM.active = status;
 
             VMTools vmTools = new VMTools(GetUserName());
+            await vmTools.SetResourceGroupAsync();
 
             //Active virtual machine or Disable virtual machine
             if (customVM.active)
-                await vmTools.Enable();
+                await vmTools.EnableAsync();
             else
-                await vmTools.Disable();
+                await vmTools.DisableAsync();
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
@@ -208,7 +199,7 @@ namespace GamingCloud.Controllers
 
             var tool = new VMTools(GetUserName());
             
-            await tool.RemoveResouceGroup();
+            await tool.RemoveResourceGroupAsync();
             
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

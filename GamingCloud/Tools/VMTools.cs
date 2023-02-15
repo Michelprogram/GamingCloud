@@ -1,9 +1,5 @@
 using Azure;
 using Azure.Core;
-using Microsoft.Azure.Management.Compute.Models;
-
-namespace GamingCloud.Tools;
-
 using Azure.Identity;
 using Azure.ResourceManager;
 using Azure.ResourceManager.Compute;
@@ -12,61 +8,62 @@ using Azure.ResourceManager.Network;
 using Azure.ResourceManager.Network.Models;
 using Azure.ResourceManager.Resources;
 
+namespace GamingCloud.Tools;
+
 public class VMTools
 {
-
     private ArmClient client;
     private ResourceGroupResource resourceGroup;
+    
     private string resourceName;
+    private string LOCATION;
+
     
-    public VMTools(string resourceName)
+    public VMTools(string username)
     {
+        resourceName = username;
+
         client = new ArmClient(new DefaultAzureCredential());
-        this.resourceName = resourceName;
-    }
-    
-    public async Task<ResourceGroupResource> SetInitResouceGroup()
-    {
-        resourceGroup = await GetResourceGroup();
-        return resourceGroup;
+        LOCATION = AzureLocation.FranceCentral;
     }
 
-    private async Task<ResourceGroupResource> GetResourceGroup()
+    public async Task SetResourceGroupAsync()
     {
-
         // Now we get a ResourceGroupResource collection for that subscription
         var subscription = await client.GetDefaultSubscriptionAsync();
         var resourceGroups = subscription.GetResourceGroups();
 
         // With the collection, we can create a new resource group with an specific name
-        var resourceGroupName = $"rg-21-{resourceName}-gaming";
+        var resourceGroupName = $"rg-{resourceName}-cloud-gaming";
         
         //Check if resource exist or not
         bool exists = await resourceGroups.ExistsAsync(resourceGroupName);
         
         //If exists than return it
-        if (exists)
-            return await resourceGroups.GetAsync(resourceGroupName);
-
-        //Set location
-        var location = AzureLocation.FranceCentral;
-        var resourceGroupData = new ResourceGroupData(location);
+        if (!exists)
+        {
+            //Set location
+            var resourceGroupData = new ResourceGroupData(LOCATION);
         
-        //Create Resource group
-        await resourceGroups.CreateOrUpdateAsync(WaitUntil.Completed, resourceGroupName, resourceGroupData);
+            //Create Resource group
+            await resourceGroups.CreateOrUpdateAsync(WaitUntil.Completed, resourceGroupName, resourceGroupData);
 
-        //Return new resource group
-        return await resourceGroups.GetAsync(resourceGroupName);
+            //Return new resource group
+            resourceGroup = await resourceGroups.GetAsync(resourceGroupName);
+        }
+        
+        resourceGroup = await resourceGroups.GetAsync(resourceGroupName);
+        
     }
 
-    public async Task RemoveResouceGroup()
+    public async Task RemoveResourceGroupAsync()
     {
         // Now we get a ResourceGroupResource collection for that subscription
         var subscription = await client.GetDefaultSubscriptionAsync();
         var resourceGroups = subscription.GetResourceGroups();
 
         // With the collection, we can create a new resource group with an specific name
-        var resourceGroupName = $"rg-21-{resourceName}-gaming";
+        var resourceGroupName = $"rg-{resourceName}-cloud-gaming";
         
         //Check if resource exist or not
         bool exists = await resourceGroups.ExistsAsync(resourceGroupName);
@@ -80,46 +77,38 @@ public class VMTools
 
     }
 
-    public async Task<string> GetPublicIpAdress()
+    public async Task<string> GetPublicIpAddressAsync()
     {
-        var resourceGroup = await GetResourceGroup();
-        string IP_NAME = $"ip-{resourceName}-gaming";
-
-
-        var a = await resourceGroup.GetPublicIPAddressAsync(IP_NAME);
-
-        return a.Value.Data.IPAddress;
+        return CreatePublicIp().Data.IPAddress;
     }
     
     private PublicIPAddressResource CreatePublicIp()
     {
-        string IP_NAME = $"ip-{resourceName}-gaming";
         PublicIPAddressCollection publicIps = resourceGroup.GetPublicIPAddresses();
 
         //Create public ip
         return publicIps.CreateOrUpdate(
             WaitUntil.Completed,
-            IP_NAME,
+            $"ip-{resourceName}-cloud-gaming",
             new PublicIPAddressData()
             {
                 PublicIPAddressVersion = NetworkIPVersion.IPv4,
                 PublicIPAllocationMethod = NetworkIPAllocationMethod.Dynamic,
-                Location = AzureLocation.FranceCentral
+                Location = LOCATION
             }).Value;
     }
 
     private VirtualNetworkResource CreateVirtualNet()
     {
-        string VNET_NAME = $"vnet-{resourceName}-gaming";
         VirtualNetworkCollection vns = resourceGroup.GetVirtualNetworks();
 
         //Create vnetResource
         return vns.CreateOrUpdate(
             WaitUntil.Completed,
-            VNET_NAME,
+            $"vnet-{resourceName}-cloud-gaming",
             new VirtualNetworkData()
             {
-                Location = AzureLocation.FranceCentral,
+                Location = LOCATION,
                 Subnets =
                 {
                     new SubnetData()
@@ -138,16 +127,15 @@ public class VMTools
 
     private NetworkInterfaceResource CreateNetworkInterface(VirtualNetworkResource vnet, PublicIPAddressResource ipResource)
     {
-        string NETWORK_INTERFACE_NAME = $"network-interface-{resourceName}-gaming";
         NetworkInterfaceCollection nics = resourceGroup.GetNetworkInterfaces();
 
         //Create network interface
         return nics.CreateOrUpdate(
             WaitUntil.Completed,
-            NETWORK_INTERFACE_NAME,
+            $"nic-{resourceName}-cloud-gaming",
             new NetworkInterfaceData()
             {
-                Location = AzureLocation.FranceCentral,
+                Location = LOCATION,
                 IPConfigurations =
                 {
                     new NetworkInterfaceIPConfigurationData()
@@ -174,8 +162,8 @@ public class VMTools
         //Virtual machine
         return vms.CreateOrUpdate(
             WaitUntil.Completed,
-            $"machine-{resourceName}",
-            new VirtualMachineData(AzureLocation.FranceCentral)
+            $"vm-{resourceName}-cloud-gaming",
+            new VirtualMachineData(LOCATION)
             {
                 HardwareProfile = new VirtualMachineHardwareProfile()
                 {
@@ -183,7 +171,7 @@ public class VMTools
                 },
                 OSProfile = new VirtualMachineOSProfile()
                 {
-                    ComputerName = $"VM-{resourceName}",
+                    ComputerName = $"machine-{resourceName}",
                     AdminUsername = adminUsername,
                     AdminPassword = adminPassword,
                     LinuxConfiguration = new LinuxConfiguration() 
@@ -217,10 +205,8 @@ public class VMTools
         
     }
 
-    public async Task Enable()
+    public async Task EnableAsync()
     {
-        var resourceGroup = await GetResourceGroup();
-
         var vms = resourceGroup.GetVirtualMachines();
 
         foreach (var vm in vms)
@@ -229,10 +215,8 @@ public class VMTools
         }
     }
 
-    public async Task Disable()
+    public async Task DisableAsync()
     {
-        var resourceGroup = await GetResourceGroup();
-
         var vms = resourceGroup.GetVirtualMachines();
 
         foreach (var vm in vms)
