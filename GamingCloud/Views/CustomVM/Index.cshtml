@@ -4,6 +4,16 @@
     ViewData["Title"] = "Index";
 }
 
+@functions{
+    public string SSHLink(CustomVM vm){
+        if (vm.active)
+            return $"ssh {vm.login}@{vm.IP}";
+        return "";
+    }
+}
+
+
+
 <h1>Index</h1>
 
 <p>
@@ -11,24 +21,24 @@
 </p>
 <table class="table">
     <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.IP)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.login)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.password)
-            </th>
-            <th>
-                Addresse de connexion
-            </th>
-            <th></th>
-        </tr>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.IP)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.login)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.password)
+        </th>
+        <th>
+            Connexion
+        </th>
+        <th></th>
+    </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+    @foreach (var item in Model) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.IP)
@@ -40,7 +50,7 @@
                 @Html.DisplayFor(modelItem => item.password)
             </td>
             <td>
-                ssh @Html.DisplayFor(modelItem => item.login)@@@Html.DisplayFor(modelItem => item.IP)
+                <p onclick="openTerminal()">@SSHLink(item)</p>
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.AutoID">Edit</a> |
@@ -56,6 +66,14 @@
                 }
             </td>
         </tr>
-}
+    }
     </tbody>
 </table>
+
+<script>
+
+    const openTerminal =() =>{
+        window.open("open -a TextEdit");
+    }
+
+</script>
