@@ -7,26 +7,31 @@ using Azure.ResourceManager.Compute.Models;
 using Azure.ResourceManager.Network;
 using Azure.ResourceManager.Network.Models;
 using Azure.ResourceManager.Resources;
+using ImageReference = Azure.ResourceManager.Compute.Models.ImageReference;
+using LinuxConfiguration = Azure.ResourceManager.Compute.Models.LinuxConfiguration;
 
 namespace GamingCloud.Tools;
 
-public class VMTools
+public class AzureTools
 {
     private ArmClient client;
     private ResourceGroupResource resourceGroup;
     
     private string resourceName;
-    private string LOCATION;
 
-    
-    public VMTools(string username)
+    public AzureTools(string username)
     {
         resourceName = username;
 
-        client = new ArmClient(new DefaultAzureCredential());
-        LOCATION = AzureLocation.FranceCentral;
+        var token = new ClientSecretCredential("b7b023b8-7c32-4c02-92a6-c8cdaa1d189c", "8850c7b5-603e-4238-b19e-11833f42c92a", "akU8Q~CNURbvnquYagP0G~qYUkOnwn-E2aZGkclD");
+
+        client = new ArmClient(token);
+
     }
 
+    /// <summary>
+    /// Get resource group or create if it doesn't exist
+    /// </summary>
     public async Task SetResourceGroupAsync()
     {
         // Now we get a ResourceGroupResource collection for that subscription
@@ -43,19 +48,19 @@ public class VMTools
         if (!exists)
         {
             //Set location
-            var resourceGroupData = new ResourceGroupData(LOCATION);
+            var resourceGroupData = new ResourceGroupData(AzureLocation.FranceCentral);
         
             //Create Resource group
             await resourceGroups.CreateOrUpdateAsync(WaitUntil.Completed, resourceGroupName, resourceGroupData);
-
-            //Return new resource group
-            resourceGroup = await resourceGroups.GetAsync(resourceGroupName);
         }
         
         resourceGroup = await resourceGroups.GetAsync(resourceGroupName);
         
     }
 
+    /// <summary>
+    /// Remove resource group with all elements inside
+    /// </summary>
     public async Task RemoveResourceGroupAsync()
     {
         // Now we get a ResourceGroupResource collection for that subscription
@@ -77,11 +82,19 @@ public class VMTools
 
     }
 
+    /// <summary>
+    /// Get ip adresse after creation of virtual machine
+    /// </summary>
+    /// <returns></returns>
     public async Task<string> GetPublicIpAddressAsync()
     {
         return CreatePublicIp().Data.IPAddress;
     }
     
+    /// <summary>
+    /// Create ip adresse
+    /// </summary>
+    /// <returns></returns>
     private PublicIPAddressResource CreatePublicIp()
     {
         PublicIPAddressCollection publicIps = resourceGroup.GetPublicIPAddresses();
@@ -94,10 +107,14 @@ public class VMTools
             {
                 PublicIPAddressVersion = NetworkIPVersion.IPv4,
                 PublicIPAllocationMethod = NetworkIPAllocationMethod.Dynamic,
-                Location = LOCATION
+                Location = AzureLocation.FranceCentral
             }).Value;
     }
 
+    /// <summary>
+    /// Create vnet
+    /// </summary>
+    /// <returns></returns>
     private VirtualNetworkResource CreateVirtualNet()
     {
         VirtualNetworkCollection vns = resourceGroup.GetVirtualNetworks();
@@ -108,7 +125,7 @@ public class VMTools
             $"vnet-{resourceName}-cloud-gaming",
             new VirtualNetworkData()
             {
-                Location = LOCATION,
+                Location = AzureLocation.FranceCentral,
                 Subnets =
                 {
                     new SubnetData()
@@ -125,6 +142,12 @@ public class VMTools
 
     }
 
+    /// <summary>
+    /// Create network interface
+    /// </summary>
+    /// <param name="vnet"></param>
+    /// <param name="ipResource"></param>
+    /// <returns></returns>
     private NetworkInterfaceResource CreateNetworkInterface(VirtualNetworkResource vnet, PublicIPAddressResource ipResource)
     {
         NetworkInterfaceCollection nics = resourceGroup.GetNetworkInterfaces();
@@ -135,7 +158,7 @@ public class VMTools
             $"nic-{resourceName}-cloud-gaming",
             new NetworkInterfaceData()
             {
-                Location = LOCATION,
+                Location = AzureLocation.FranceCentral,
                 IPConfigurations =
                 {
                     new NetworkInterfaceIPConfigurationData()
@@ -150,20 +173,45 @@ public class VMTools
             }).Value;
     }
 
-    public VirtualMachineResource CreateVirtualMachine(string adminUsername, string adminPassword)
+    /// <summary>
+    /// Get Custom image generate before, stored in resource group img-linux
+    /// </summary>
+    /// <returns></returns>
+    private async Task<DiskImageResource> GetCustomImageAsync()
+    {
+        var subscription = await client.GetDefaultSubscriptionAsync();
+        var resourceGroups = subscription.GetResourceGroups();
+        
+        var resourceGroup = await resourceGroups.GetAsync("img-linux");
+        
+        return resourceGroup.Value.GetDiskImages().Get("vm-linux-rdp").Value;
+        
+    }
+
+    /// <summary>
+    /// Create virtual machine with ip, vnet and interfaceNetwork
+    /// </summary>
+    /// <param name="adminUsername"></param>
+    /// <param name="adminPassword"></param>
+    /// <returns></returns>
+    public async Task<VirtualMachineResource> CreateVirtualMachine(string adminUsername, string adminPassword)
     {
 
         var ip = CreatePublicIp();
         var vnet = CreateVirtualNet();
         var interfaceNetwork = CreateNetworkInterface(vnet, ip);
         
+        //Get collection virtual machines
         VirtualMachineCollection vms = resourceGroup.GetVirtualMachines();
         
+        //Get Custom image
+        DiskImageResource customImg = await GetCustomImageAsync();
+        
         //Virtual machine
-        return vms.CreateOrUpdate(
+        var vm = vms.CreateOrUpdate(
             WaitUntil.Completed,
             $"vm-{resourceName}-cloud-gaming",
-            new VirtualMachineData(LOCATION)
+            new VirtualMachineData(AzureLocation.FranceCentral)
             {
                 HardwareProfile = new VirtualMachineHardwareProfile()
                 {
@@ -182,13 +230,13 @@ public class VMTools
                 },
                 StorageProfile = new VirtualMachineStorageProfile()
                 {
-                    OSDisk = new VirtualMachineOSDisk(DiskCreateOptionType.FromImage),
+                    OSDisk = new VirtualMachineOSDisk(DiskCreateOptionType.FromImage)
+                    {
+                        DeleteOption = DiskDeleteOptionType.Delete,
+                    },
                     ImageReference = new ImageReference()
                     {
-                        Offer = "UbuntuServer",
-                        Publisher = "Canonical",
-                        Sku = "18.04-LTS",
-                        Version = "latest"
+                        Id = customImg.Id
                     }
                 },
                 NetworkProfile = new VirtualMachineNetworkProfile()
@@ -203,25 +251,32 @@ public class VMTools
                 },
             }).Value;
         
+        return vm;
+
     }
 
+    /// <summary>
+    /// Start virtual machine
+    /// </summary>
     public async Task EnableAsync()
     {
         var vms = resourceGroup.GetVirtualMachines();
+        
+        var vm = await vms.GetAsync($"vm-{resourceName}-cloud-gaming");
 
-        foreach (var vm in vms)
-        {
-            await vm.PowerOnAsync(WaitUntil.Completed);
-        }
+        await vm.Value.PowerOnAsync(WaitUntil.Completed);
+        
     }
 
+    /// <summary>
+    /// Stop virtual machine
+    /// </summary>
     public async Task DisableAsync()
     {
         var vms = resourceGroup.GetVirtualMachines();
 
-        foreach (var vm in vms)
-        {
-            await vm.PowerOffAsync(WaitUntil.Completed);
-        }
+        var vm = await vms.GetAsync($"vm-{resourceName}-cloud-gaming");
+
+        await vm.Value.PowerOffAsync(WaitUntil.Completed);
     }
 }

@@ -5,10 +5,21 @@
 }
 
 @functions{
-    public string SSHLink(CustomVM vm){
+    public string SSH(CustomVM vm){
         if (vm.active)
             return $"ssh {vm.login}@{vm.IP}";
         return "";
+    }
+    
+    public string RDP(CustomVM vm){
+        if (vm.active)
+            return $"rdp {vm.IP}";
+        return "";
+    }
+
+    public string GenerateRDPLink(CustomVM vm)
+    {
+        return $"rdp://address=s:{vm.IP}/";
     }
 }
 
@@ -32,7 +43,10 @@
             @Html.DisplayNameFor(model => model.password)
         </th>
         <th>
-            Connexion
+            Connexion SSH
+        </th>
+        <th>
+            Connexion RDP
         </th>
         <th></th>
     </tr>
@@ -50,12 +64,15 @@
                 @Html.DisplayFor(modelItem => item.password)
             </td>
             <td>
-                <p onclick="openTerminal()">@SSHLink(item)</p>
+                <a href="ssh://@item.login@@@item.IP">@SSH(item)</a>
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.AutoID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.AutoID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.AutoID">Delete</a> |
+                <button class="rdp-file btn btn-success" data-ip="@item.IP" data-username="@item.login" data-password="@item.password">RDP file</button>
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.AutoID" class="btn btn-info">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.AutoID" class="btn btn-primary">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.AutoID" class="btn btn-danger">Delete</a> |
                 @if (item.active)
                 {
                     <a asp-action="Status" asp-route-id="@item.AutoID" asp-route-status="false" class="btn btn-danger" >Stop</a>
@@ -71,9 +88,24 @@
 </table>
 
 <script>
+    
+const buttons = document.querySelectorAll(".rdp-file")
 
-    const openTerminal =() =>{
-        window.open("open -a TextEdit");
-    }
+buttons.forEach((btn)=>{
+    btn.addEventListener('click', (ev)=>{
+        const target = ev.target
+        const ip = target.getAttribute('data-ip')
+        const [username, password] = [target.getAttribute('data-username'), target.getAttribute('data-password')]
+        rdpFile(ip, username, password)
+    })    
+})
 
+const rdpFile = (ip, username, password) =>{
+    
+    const link = document.createElement("a");
+    const file = new Blob([`full address:s:${ip}\nusername:s:${username}\npassword:s:${password}`], { type: 'text/plain' }); 
+    link.href = URL.createObjectURL(file);
+    link.download = `${ip}.rdp`;
+    link.click(); 
+}
 </script>

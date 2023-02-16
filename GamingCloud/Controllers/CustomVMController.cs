@@ -1,3 +1,4 @@
+using Azure.Core;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GamingCloud.Data;
@@ -6,6 +7,7 @@ using GamingCloud.Tools;
 
 namespace GamingCloud.Controllers
 {
+    [TypeFilter(typeof(Authentification))]
     public class CustomVMController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -15,11 +17,21 @@ namespace GamingCloud.Controllers
             _context = context;
         }
 
+        /// <summary>
+        /// Redirection if user isn't logged
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult Login()
+        {
+            string url = "/Identity/Account/Login";
+            return Redirect(url);
+        }
+        
         // GET: CustomVM
         public async Task<IActionResult> Index()
         {
             return _context.DbSet != null ? 
-                          View(await _context.DbSet.ToListAsync()) :
+                          View(_context.DbSet.Where(m => m.name.Equals(GetUserName() + "-vm"))) :
                           Problem("Entity set 'ApplicationDbContext.DbSet'  is null.");
         }
 
@@ -61,11 +73,11 @@ namespace GamingCloud.Controllers
 
                 string userName = GetUserName();
                 
-                VMTools vmTools = new VMTools(userName);
+                AzureTools vmTools = new AzureTools(userName);
 
                 await vmTools.SetResourceGroupAsync();
                     
-                vmTools.CreateVirtualMachine(customVM.login, customVM.password);
+                await vmTools.CreateVirtualMachine(customVM.login, customVM.password);
 
                 customVM.name = userName + "-vm";
                 customVM.active = true;
@@ -100,7 +112,7 @@ namespace GamingCloud.Controllers
 
             customVM.active = status;
 
-            VMTools vmTools = new VMTools(GetUserName());
+            AzureTools vmTools = new AzureTools(GetUserName());
             await vmTools.SetResourceGroupAsync();
 
             //Active virtual machine or Disable virtual machine
@@ -197,7 +209,7 @@ namespace GamingCloud.Controllers
                 _context.DbSet.Remove(customVM);
             }
 
-            var tool = new VMTools(GetUserName());
+            var tool = new AzureTools(GetUserName());
             
             await tool.RemoveResourceGroupAsync();
             
@@ -209,5 +221,7 @@ namespace GamingCloud.Controllers
         {
           return (_context.DbSet?.Any(e => e.AutoID == id)).GetValueOrDefault();
         }
+        
+        
     }
 }
