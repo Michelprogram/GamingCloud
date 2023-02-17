@@ -1,1 +1,13 @@
+# IDE
 .idea
+.DS_Store
+.vs
+
+# Terraform
+Infra/.terraform
+Infra/.terraform.lock.hcl
+Infra/.terraform.tfstate.backup
+Infra/.terraform.tfstate
+
+# Dotnet
+GamingCloud/bin/*

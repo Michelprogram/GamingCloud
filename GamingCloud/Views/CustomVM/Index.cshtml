@@ -10,26 +10,18 @@
             return $"ssh {vm.login}@{vm.IP}";
         return "";
     }
-    
-    public string RDP(CustomVM vm){
-        if (vm.active)
-            return $"rdp {vm.IP}";
-        return "";
-    }
-
-    public string GenerateRDPLink(CustomVM vm)
-    {
-        return $"rdp://address=s:{vm.IP}/";
-    }
 }
 
 
 
-<h1>Index</h1>
+<h1>VM list</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+@if (Model.Count() == 0)
+{
+    <p>
+        <a asp-action="Create">Create New</a>
+    </p>
+}
 <table class="table">
     <thead>
     <tr>
@@ -67,7 +59,10 @@
                 <a href="ssh://@item.login@@@item.IP">@SSH(item)</a>
             </td>
             <td>
-                <button class="rdp-file btn btn-success" data-ip="@item.IP" data-username="@item.login" data-password="@item.password">RDP file</button>
+                @if (item.active)
+                {
+                    <button class="rdp-file btn btn-success" data-ip="@item.IP" data-username="@item.login" data-password="@item.password">RDP file</button>
+                }
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.AutoID" class="btn btn-info">Edit</a> |

@@ -1,8 +1,102 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+@{
     ViewData["Title"] = "Home Page";
 }
 
+<style>
+    
+    .text-desc{
+        position: relative;
+    }
+
+    .text-desc::after{
+        position: absolute;
+        content: "";
+        width:100%;
+        height: 100%;
+        background-color: white;
+        left: 0;
+        top: 0;
+        
+        animation-duration: 3s;
+        animation-name: textAppear;
+        animation-fill-mode: forwards;
+        animation-timing-function: cubic-bezier(.07,.82,.26,.94);
+        
+    }
+    
+    .text-desc:nth-child(2)::after{
+    
+        animation-delay: 1s;
+    
+    }
+    
+    .text-desc:nth-child(4)::after{
+    
+        animation-delay: 1s;
+    
+    }
+    
+    @@keyframes textAppear{
+      from {
+        height: 100%;
+      }
+    
+      to {
+        height: 0%;
+      }
+    }
+    
+</style>
+
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4">Welcome to 21 Cloud Gaming</h1>
+    <div class="container d-flex align-content-center row mt-5 mb-5">
+        <div class="col">
+            <div class="text-start">
+                <p class="text-desc">
+                    <span class="fw-bold">Bienvenue sur notre plateforme de cloud gaming 🎮</span>, la destination ultime pour les joueurs passionnés de Snake 🐍!
+                </p>
+
+                <p class="text-desc">
+                    Sur notre page d'accueil, vous trouverez la possibilités de démarrer une VM dans le cloud <span class="fw-bold">Azure</span> ☁️.
+                    Que vous soyez un joueur occasionnel ou un gamer chevronné 🧙, nous avons une solution adaptée à vos besoins, nous offrons une variété de jeux (juste snake).
+                </p>
+
+                <p class="text-desc">
+                    Vous pouvez également explorez notre <span class="fw-bold">catalogue de jeux</span>, découvrez de nouveaux titres et partagez vos expériences avec la communauté de joueurs en ligne 👨‍💻.
+                </p>
+
+                <p class="text-desc">
+                    Notre plateforme de cloud gaming est facile à utiliser, avec une interface utilisateur intuitive. Vous pouvez jouer sur votre <span class="fw-bold">ordinateur</span>, votre <span class="fw-bold">tablette</span> ou votre <span class="fw-bold">smartphone</span>, avec une qualité d'image et de son exceptionnelle (c'est faux mais ça fais vendeur 💶).
+                </p>
+
+                <p>Source : Chat GPT 🤖</p>
+            </div>
+        </div>
+        <div class="col d-flex flex-column justify-content-center align-items-center" style="gap: 10%">
+            
+            @if (SignInManager.IsSignedIn(User))
+            {
+                <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Wassup @User.Identity?.Name!</a>
+                <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                    <button type="submit" class="btn btn-danger w-auto">Logout</button>
+                </form>
+                <a class="btn btn-success" asp-area="" asp-controller="CustomVM" asp-action="Index">Create VM</a>
+
+            }
+            else
+            {
+                <a class="btn btn-primary text-white w-50" asp-area="Identity" asp-page="/Account/Register">Register</a>
+                <a class="btn btn-success w-50" asp-area="Identity" asp-page="/Account/Login">Login</a>
+            }
+        </div>
+    </div>
+
+    <p class="fw-light">Shadow is down, 21 Cloud GAMING is here !</p>
 </div>

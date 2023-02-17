@@ -19,20 +19,9 @@
             </button>
             <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                 <ul class="navbar-nav flex-grow-1">
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                    </li>
-                    @if (User.Identity.IsAuthenticated) {
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="CustomVM" asp-action="Index">VM</a>
-                        </li>                   
-                    }
- 
                 </ul>
-                <partial name="_LoginPartial"/>
+                <img src="@Url.Content("images.png")" alt="shadow ?" style="width: 30px">
+                <!--<partial name="_LoginPartial"/>-->
             </div>
         </div>
     </nav>
@@ -44,8 +33,8 @@
 </div>
 
 <footer class="border-top footer text-muted">
-    <div class="container">
-        &copy; 2023 - GamingCloud - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <div class="container d-flex justify-content-center">
+        &copy; 2023 - GamingCloud - .NET - SQL
     </div>
 </footer>
 <script src="~/lib/jquery/dist/jquery.min.js"></script>

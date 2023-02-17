@@ -184,7 +184,7 @@ public class AzureTools
         
         var resourceGroup = await resourceGroups.GetAsync("img-linux");
         
-        return resourceGroup.Value.GetDiskImages().Get("vm-linux-rdp").Value;
+        return resourceGroup.Value.GetDiskImages().Get("img-linux-snake").Value;
         
     }
 
