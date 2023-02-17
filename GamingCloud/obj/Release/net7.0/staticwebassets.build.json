@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "L0bkYr+PKWY1oPPCfKGZB8uglhKfpzVbVp49HlNxojg=",
+  "Hash": "RZzewFxhMu++VrRqdGn0tsVWQA7ewQebeWd+QJFwqGY=",
   "Source": "GamingCloud",
   "BasePath": "_content/GamingCloud",
   "Mode": "Default",
@@ -1071,23 +1071,6 @@
       "OriginalItemSpec": "/Users/michel-developer/Desktop/Cloud/MVC/GamingCloud/GamingCloud/obj/Release/net7.0/scopedcss/projectbundle/GamingCloud.bundle.scp.css"
     },
     {
-      "Identity": "/Users/michel-developer/Desktop/Cloud/MVC/GamingCloud/GamingCloud/wwwroot/css/GamingCloud.styles.css",
-      "SourceId": "GamingCloud",
-      "SourceType": "Discovered",
-      "ContentRoot": "/Users/michel-developer/Desktop/Cloud/MVC/GamingCloud/GamingCloud/wwwroot/",
-      "BasePath": "_content/GamingCloud",
-      "RelativePath": "css/GamingCloud.styles.css",
-      "AssetKind": "All",
-      "AssetMode": "All",
-      "AssetRole": "Primary",
-      "RelatedAsset": "",
-      "AssetTraitName": "",
-      "AssetTraitValue": "",
-      "CopyToOutputDirectory": "Never",
-      "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot/css/GamingCloud.styles.css"
-    },
-    {
       "Identity": "/Users/michel-developer/Desktop/Cloud/MVC/GamingCloud/GamingCloud/wwwroot/css/site.css",
       "SourceId": "GamingCloud",
       "SourceType": "Discovered",
@@ -1103,6 +1086,23 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/css/site.css"
+    },
+    {
+      "Identity": "/Users/michel-developer/Desktop/Cloud/MVC/GamingCloud/GamingCloud/wwwroot/css/style.css",
+      "SourceId": "GamingCloud",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/michel-developer/Desktop/Cloud/MVC/GamingCloud/GamingCloud/wwwroot/",
+      "BasePath": "_content/GamingCloud",
+      "RelativePath": "css/style.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/css/style.css"
     },
     {
       "Identity": "/Users/michel-developer/Desktop/Cloud/MVC/GamingCloud/GamingCloud/wwwroot/favicon.ico",

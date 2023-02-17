@@ -8,6 +8,15 @@
     ViewData["Title"] = "Home Page";
 }
 
+@functions{
+
+    public string GetUserName()
+    {
+        return @User.Identity?.Name!.Split("@")[0].Replace(".", " ");
+    }
+
+}
+
 <div class="text-center">
     <h1 class="display-4">Welcome to 21 Cloud Gaming</h1>
     <div class="container d-flex align-content-center row mt-5 mb-5">
@@ -35,14 +44,27 @@
         </div>
         <div class="col d-flex flex-column justify-content-center align-items-center left">
             
+
+
             @if (SignInManager.IsSignedIn(User))
             {
-                <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Wassup @User.Identity?.Name!</a>
-                <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                    <button type="submit" class="btn btn-danger w-auto">Logout</button>
-                </form>
-                <a class="btn btn-success" asp-area="" asp-controller="CustomVM" asp-action="Index">Create VM</a>
+                
+                <div class="card" style="width: 18rem;">
+                    <img src="https://source.unsplash.com/random/286x286/?city" class="card-img-top" alt="...">
+                    <div class="card-body">
+                        <h5 class="card-title">                
+                            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Wassup @GetUserName()</a>
+                        </h5>
+                        <p class="card-text">Rain drop, drop top 🐍.</p>
+                        <div class="d-flex justify-content-around">
+                            <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                                <button type="submit" class="btn btn-danger w-auto">Logout</button>
+                            </form>
+                            <a class="btn btn-success" asp-area="" asp-controller="CustomVM" asp-action="Index">Create VM</a>
+                        </div>
 
+                    </div>
+                </div>
             }
             else
             {

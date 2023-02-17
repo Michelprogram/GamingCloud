@@ -5,12 +5,12 @@
       "PackagePath": "staticwebassets/GamingCloud.bundle.scp.css"
     },
     {
-      "Id": "/Users/michel-developer/Desktop/Cloud/MVC/GamingCloud/GamingCloud/wwwroot/css/GamingCloud.styles.css",
-      "PackagePath": "staticwebassets/css/GamingCloud.styles.css"
-    },
-    {
       "Id": "/Users/michel-developer/Desktop/Cloud/MVC/GamingCloud/GamingCloud/wwwroot/css/site.css",
       "PackagePath": "staticwebassets/css/site.css"
+    },
+    {
+      "Id": "/Users/michel-developer/Desktop/Cloud/MVC/GamingCloud/GamingCloud/wwwroot/css/style.css",
+      "PackagePath": "staticwebassets/css/style.css"
     },
     {
       "Id": "/Users/michel-developer/Desktop/Cloud/MVC/GamingCloud/GamingCloud/wwwroot/favicon.ico",
