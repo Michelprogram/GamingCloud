@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "Ib8k8IJw/B/AgDPMeTuNK7JP3X/fJ45hOO8UHhzpFlk=",
+  "Hash": "H+wZM0+nk4DaYR/PxXmVLsxg/bQBJ8Hp/h9yrozJkXY=",
   "Source": "GamingCloud",
   "BasePath": "_content/GamingCloud",
   "Mode": "Default",
@@ -1071,6 +1071,23 @@
       "OriginalItemSpec": "/Users/michel-developer/Desktop/Cloud/MVC/GamingCloud/GamingCloud/obj/Release/net7.0/scopedcss/projectbundle/GamingCloud.bundle.scp.css"
     },
     {
+      "Identity": "/Users/michel-developer/Desktop/Cloud/MVC/GamingCloud/GamingCloud/wwwroot/css/GamingCloud.styles.css",
+      "SourceId": "GamingCloud",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/michel-developer/Desktop/Cloud/MVC/GamingCloud/GamingCloud/wwwroot/",
+      "BasePath": "_content/GamingCloud",
+      "RelativePath": "css/GamingCloud.styles.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/css/GamingCloud.styles.css"
+    },
+    {
       "Identity": "/Users/michel-developer/Desktop/Cloud/MVC/GamingCloud/GamingCloud/wwwroot/css/site.css",
       "SourceId": "GamingCloud",
       "SourceType": "Discovered",
@@ -1103,6 +1120,23 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/favicon.ico"
+    },
+    {
+      "Identity": "/Users/michel-developer/Desktop/Cloud/MVC/GamingCloud/GamingCloud/wwwroot/images.png",
+      "SourceId": "GamingCloud",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/michel-developer/Desktop/Cloud/MVC/GamingCloud/GamingCloud/wwwroot/",
+      "BasePath": "_content/GamingCloud",
+      "RelativePath": "images.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/images.png"
     },
     {
       "Identity": "/Users/michel-developer/Desktop/Cloud/MVC/GamingCloud/GamingCloud/wwwroot/js/site.js",

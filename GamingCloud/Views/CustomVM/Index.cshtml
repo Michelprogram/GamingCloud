@@ -13,7 +13,6 @@
 }
 
 
-
 <h1>VM list</h1>
 
 @if (Model.Count() == 0)
@@ -35,10 +34,10 @@
             @Html.DisplayNameFor(model => model.password)
         </th>
         <th>
-            Connexion SSH
+            SSH
         </th>
         <th>
-            Connexion RDP
+            RDP
         </th>
         <th></th>
     </tr>
@@ -70,22 +69,30 @@
                 <a asp-action="Delete" asp-route-id="@item.AutoID" class="btn btn-danger">Delete</a> |
                 @if (item.active)
                 {
-                    <a asp-action="Status" asp-route-id="@item.AutoID" asp-route-status="false" class="btn btn-danger" >Stop</a>
+                    <a asp-action="Status" asp-route-id="@item.AutoID" asp-route-status="false" class="btn btn-danger status">Stop</a>
                 }
                 else
                 {
-                    <a asp-action="Status" asp-route-id="@item.AutoID" asp-route-status="true" class="btn btn-success">Start</a>
+                    <a asp-action="Status" asp-route-id="@item.AutoID" asp-route-status="true" class="btn btn-success status">Start</a>
                 }
+                
             </td>
         </tr>
     }
     </tbody>
 </table>
 
+<p id="credit" class="text-center fw-bold opacity-0 fs-1">Crédit à Alexandre et Guilhem 🧙‍</p>
+
 <script>
     
 const buttons = document.querySelectorAll(".rdp-file")
 
+const statusButtons = document.querySelectorAll(".status")
+
+const credit = document.querySelector("#credit")
+
+// Case if we have more than one VM by user
 buttons.forEach((btn)=>{
     btn.addEventListener('click', (ev)=>{
         const target = ev.target
@@ -95,6 +102,17 @@ buttons.forEach((btn)=>{
     })    
 })
 
+// Turn button to loader
+statusButtons.forEach((btn)=>{
+    btn.addEventListener('click',(ev)=>{
+        const target = ev.target
+        
+        target.innerHTML = `<div class="spinner-border text-ligth spinner" role="status"></div>`
+        credit.classList.replace("opacity-0", "opacity-100")
+    })
+})
+
+// Create file with information
 const rdpFile = (ip, username, password) =>{
     
     const link = document.createElement("a");

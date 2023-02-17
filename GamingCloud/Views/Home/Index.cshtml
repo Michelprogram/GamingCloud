@@ -8,52 +8,6 @@
     ViewData["Title"] = "Home Page";
 }
 
-<style>
-    
-    .text-desc{
-        position: relative;
-    }
-
-    .text-desc::after{
-        position: absolute;
-        content: "";
-        width:100%;
-        height: 100%;
-        background-color: white;
-        left: 0;
-        top: 0;
-        
-        animation-duration: 3s;
-        animation-name: textAppear;
-        animation-fill-mode: forwards;
-        animation-timing-function: cubic-bezier(.07,.82,.26,.94);
-        
-    }
-    
-    .text-desc:nth-child(2)::after{
-    
-        animation-delay: 1s;
-    
-    }
-    
-    .text-desc:nth-child(4)::after{
-    
-        animation-delay: 1s;
-    
-    }
-    
-    @@keyframes textAppear{
-      from {
-        height: 100%;
-      }
-    
-      to {
-        height: 0%;
-      }
-    }
-    
-</style>
-
 <div class="text-center">
     <h1 class="display-4">Welcome to 21 Cloud Gaming</h1>
     <div class="container d-flex align-content-center row mt-5 mb-5">
@@ -79,7 +33,7 @@
                 <p>Source : Chat GPT 🤖</p>
             </div>
         </div>
-        <div class="col d-flex flex-column justify-content-center align-items-center" style="gap: 10%">
+        <div class="col d-flex flex-column justify-content-center align-items-center left">
             
             @if (SignInManager.IsSignedIn(User))
             {

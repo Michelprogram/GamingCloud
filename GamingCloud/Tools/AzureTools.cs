@@ -23,10 +23,19 @@ public class AzureTools
     {
         resourceName = username;
 
-        var token = new ClientSecretCredential("b7b023b8-7c32-4c02-92a6-c8cdaa1d189c", "8850c7b5-603e-4238-b19e-11833f42c92a", "akU8Q~CNURbvnquYagP0G~qYUkOnwn-E2aZGkclD");
+        client = InitClient();
 
-        client = new ArmClient(token);
+    }
 
+    private ArmClient InitClient()
+    {
+        var conf = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+        
+        return new ArmClient(new ClientSecretCredential(
+            conf.GetValue("TenantId", "tenantId"),
+            conf.GetValue("ClientId", "clientId"),
+            conf.GetValue("ClientSecret", "clientSecret")
+        ));
     }
 
     /// <summary>
